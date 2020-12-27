@@ -56,8 +56,8 @@ for i in range(0,sub_len) :
     driver.back()
     driver.back()
 
-print('Crawling Finished')
 print(assignList)
+print('Crawling Finished')
 
 result = ''
 for i in assignList :
