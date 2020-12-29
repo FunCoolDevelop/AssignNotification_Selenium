@@ -5,3 +5,6 @@ Selenium crawling engine
  - pip install selenium
  - conda install selenium
 2) Download Chrome Web Driver
+# Django Setup
+ - pip install django
+ - pip install mysqlclient
