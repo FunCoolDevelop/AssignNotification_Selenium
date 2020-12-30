@@ -1,0 +1,20 @@
+<table calss="table-contents" style="padding:10px">
+    <tr>   
+        <th>id</th>
+        <th>college_id</th>
+        <th>course_ids</th>
+        <th>name</th>
+        <th>login_id</th>
+        <th>login_pw</th>
+    </tr>
+    {% for student in students %}
+    <tr>   
+        <th>{{student.id}}</th>
+        <th>{{student.college_id}}</th>
+        <th>{{student.course_ids}}</th>
+        <th>{{student.name}}</th>
+        <th>{{student.login_id}}</th>
+        <th>{{student.login_pw}}</th>
+    </tr>
+    {%endfor%}
+</table>
