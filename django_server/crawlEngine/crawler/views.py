@@ -3,6 +3,7 @@ from django.db.models import Q
 from .models import Assign, College, Student, Course, Quiz, TeamPro
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import time, datetime
 from time import sleep
 import asyncio
 from asgiref.sync import sync_to_async, async_to_sync
@@ -30,6 +31,7 @@ def operation(sid,stObj) :
         crawl(stObj)
 
 def crawl(student):
+    start = time.time()
     crawlTemp(student) # 학기중엔 crawlTemp 사용x
 
     '''
@@ -103,8 +105,12 @@ def crawl(student):
     print(result)
 
     driver.close()
-    postProcess(assignList)
+    postProcess(student,assignList)
     '''
+    start = time.time() - start
+    times = str(datetime.timedelta(seconds = start)).split('.')
+    times = times[0]
+    print('Time taken : ' + times)
 
 def crawlTemp(student): # 학기중이 아니므로 다른 경로로 크롤링
     print("Crawling account name [" + student.name + "]")
@@ -184,8 +190,22 @@ def crawlTemp(student): # 학기중이 아니므로 다른 경로로 크롤링
     print(result)
 
     driver.close()
-    postProcess(assignList)
+    postProcess(student,assignList)
 
-def postProcess(assignRes):
+def postProcess(student,assignRes):
     # assignRes의 각 행 0번째 값은 과목의 이름
-    print('!')
+    courseQuery(student,assignRes)
+
+def courseQuery(student,assignRes):
+    collegeId = student.college_id
+    courseLs = ''
+    sub_len = len(assignRes)
+    for i in range(0, sub_len):
+        nName = assignRes[i][0]
+        try:
+            tmp = Course.objects.filter(Q(college_id=collegeId) & Q(name=nName)).get()
+        except :
+            tmp = Course.objects.create(college_id = collegeId,name = nName, professor = '')
+        courseLs += (str)(tmp.id) + ';'
+    student.course_ids = courseLs
+    student.save()
