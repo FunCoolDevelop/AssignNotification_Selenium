@@ -1,12 +1,15 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
+from django.utils import timezone
 from .models import Assign, College, Student, Course, Quiz, TeamPro
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import time, datetime
-from time import sleep
-import asyncio
 from asgiref.sync import sync_to_async, async_to_sync
+from time import sleep
+from datetime import datetime
+import time, datetime
+import pytz
+import asyncio
 
 def index(request) :
     students = Student.objects.all()
@@ -195,6 +198,7 @@ def crawlTemp(student): # 학기중이 아니므로 다른 경로로 크롤링
 def postProcess(student,assignRes):
     # assignRes의 각 행 0번째 값은 과목의 이름
     courseQuery(student,assignRes)
+    assignQuery(student,assignRes)
 
 def courseQuery(student,assignRes):
     collegeId = student.college_id
@@ -209,3 +213,40 @@ def courseQuery(student,assignRes):
         courseLs += (str)(tmp.id) + ';'
     student.course_ids = courseLs
     student.save()
+
+def assignQuery(student, assignRes) :
+    collegeId = student.college_id
+    courseIds = student.course_ids
+    courseIds = courseIds.split(';')
+
+    sub_len = len(courseIds)
+    for i in range(0,sub_len - 1) :
+        nowId = courseIds[i]
+        nowAssign = assignRes[i]
+        try:
+            tmpset = Assign.objects.all()
+            tmpset = tmpset.filter(Q(course_id=nowId))
+            tmpset.delete()
+        except :
+            i = i
+
+        assignLen = len(nowAssign)
+        for j in range(1,assignLen) :
+            date = changeFormat(nowAssign[j][2])
+            tmp = Assign.objects.create(course_id = nowId,name = nowAssign[j][0], grade = nowAssign[j][1], dead_line = date)
+        
+def changeFormat(res) :
+    res = res.split(' ')
+    date = res[0].split('.')
+    time = res[2].split(':')
+    if res[1] == '오후' :
+        tmp = (int)(time[0]) + 12
+        if tmp == 24 :
+            tmp = 0
+        time[0] = (str)(tmp)
+    date.append(time[0])
+    date.append(time[1])
+    #print(date)
+    cr_date = datetime.datetime((int)(date[0]), (int)(date[1]), (int)(date[2]), (int)(date[3]), (int)(date[4]), 0, 0)
+    date = cr_date.strftime("%Y-%m-%d %H:%M:%S.%f")
+    return date
