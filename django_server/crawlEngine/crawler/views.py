@@ -8,7 +8,6 @@ from asgiref.sync import sync_to_async, async_to_sync
 from time import sleep
 from datetime import datetime
 import time, datetime
-import pytz
 import asyncio
 
 def index(request) :
@@ -68,7 +67,7 @@ def crawl(student):
         
         lessons = driver.find_elements_by_class_name('sub_open')
         lns = lessons[i]
-        print("Course " + (str)(i + 1) + "    " + lns.text)
+        #print("Course " + (str)(i + 1) + "    " + lns.text)
         tmpList.append(lns.text)
         lns.click()
         homw_tab = driver.find_element_by_id('menu_report')
@@ -84,7 +83,7 @@ def crawl(student):
 
         for j in range(0,l):
                 nn = names[j].text # name
-                ns = dates[((j+1)*5) - 3].text + '/' + dates[((j+1)*5) - 2].text # score
+                ns = dates[((j+1)*5) - 2].text # score
                 nd = dates[((j+1)*5) - 1].text # date
                 tmp = []
                 tmp.append(nn)
@@ -96,7 +95,7 @@ def crawl(student):
         driver.back()
         driver.back()
 
-    print('Crawling Finished')
+    #print('Crawling Finished')
 
     result = ''
     for i in assignList : # string transformation
@@ -105,7 +104,7 @@ def crawl(student):
         for j in range(1,ilen) :
             result += i[j][0] + '  |  ' + i[j][1] + '  |  ' + i[j][2] + '\n'
         result += '\n'
-    print(result)
+    #print(result)
 
     driver.close()
     postProcess(student,assignList)
@@ -151,7 +150,7 @@ def crawlTemp(student): # 학기중이 아니므로 다른 경로로 크롤링
         lns = lessons[i]
 
         try :
-            print("Course " + (str)(i + 1) + "    " + lns.text)
+            #print("Course " + (str)(i + 1) + "    " + lns.text)
             tmpList.append(lns.text)
             lns.click()
             homw_tab = driver.find_element_by_id('menu_report')
@@ -167,7 +166,7 @@ def crawlTemp(student): # 학기중이 아니므로 다른 경로로 크롤링
 
             for j in range(0,l):
                 nn = names[j].text # name
-                ns = dates[((j+1)*5) - 3].text + '/' + dates[((j+1)*5) - 2].text # score
+                ns = dates[((j+1)*5) - 2].text # score
                 nd = dates[((j+1)*5) - 1].text # date
                 tmp = []
                 tmp.append(nn)
@@ -181,7 +180,7 @@ def crawlTemp(student): # 학기중이 아니므로 다른 경로로 크롤링
         except :
             break
 
-    print('Crawling Finished')
+    #print('Crawling Finished')
 
     result = ''
     for i in assignList : # string transformation
@@ -190,7 +189,7 @@ def crawlTemp(student): # 학기중이 아니므로 다른 경로로 크롤링
         for j in range(1,ilen) :
             result += i[j][0] + '  |  ' + i[j][1] + '  |  ' + i[j][2] + '\n'
         result += '\n'
-    print(result)
+    #print(result)
 
     driver.close()
     postProcess(student,assignList)
