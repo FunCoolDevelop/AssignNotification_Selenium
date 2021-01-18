@@ -34,10 +34,9 @@ def operation(sid,stObj) :
 
 def crawl(student):
     start = time.time()
-    crawlTemp(student) # 학기중엔 crawlTemp 사용x
+    ## crawlTemp(student) # 학기중엔 crawlTemp 사용x
 
-    '''
-    print("Crawling account name [" + student.name + "]")
+    print('Crawling account name [' + student.name + ']' + ' / ' + (str)(datetime.datetime.now()))
     # login
     college = College.objects.filter(Q(id=student.college_id)).get()
     options = webdriver.ChromeOptions()
@@ -67,33 +66,37 @@ def crawl(student):
         
         lessons = driver.find_elements_by_class_name('sub_open')
         lns = lessons[i]
-        #print("Course " + (str)(i + 1) + "    " + lns.text)
-        tmpList.append(lns.text)
-        lns.click()
-        homw_tab = driver.find_element_by_id('menu_report')
-        homw_tab.click()
 
-        names = driver.find_elements_by_class_name("subjt_top")
-        dates = driver.find_elements_by_class_name("number")
-        
-        if names == None :
-            l = 0
-        else :
-            l = len(names)
+        try :
+            print("Course " + (str)(i + 1) + "    " + lns.text)
+            tmpList.append(lns.text)
+            lns.click()
+            homw_tab = driver.find_element_by_id('menu_report')
+            homw_tab.click()
 
-        for j in range(0,l):
-                nn = names[j].text # name
-                ns = dates[((j+1)*5) - 2].text # score
-                nd = dates[((j+1)*5) - 1].text # date
-                tmp = []
-                tmp.append(nn)
-                tmp.append(ns)
-                tmp.append(nd)
-                tmpList.append(tmp)
+            names = driver.find_elements_by_class_name("subjt_top")
+            dates = driver.find_elements_by_class_name("number")
+            
+            if names == None :
+                l = 0
+            else :
+                l = len(names)
+
+            for j in range(0,l):
+                    nn = names[j].text # name
+                    ns = dates[((j+1)*5) - 2].text # score
+                    nd = dates[((j+1)*5) - 1].text # date
+                    tmp = []
+                    tmp.append(nn)
+                    tmp.append(ns)
+                    tmp.append(nd)
+                    tmpList.append(tmp)
             assignList.append(tmpList)
 
-        driver.back()
-        driver.back()
+            driver.back()
+            driver.back()
+        except :
+            break
 
     #print('Crawling Finished')
 
@@ -108,14 +111,13 @@ def crawl(student):
 
     driver.close()
     postProcess(student,assignList)
-    '''
     start = time.time() - start
     times = str(datetime.timedelta(seconds = start)).split('.')
     times = times[0]
     print('Time taken : ' + times)
 
 def crawlTemp(student): # 학기중이 아니므로 다른 경로로 크롤링
-    print("Crawling account name [" + student.name + "]")
+    print('Crawling account name [' + student.name + ']' + ' / ' + (str)(datetime.datetime.now()))
     # login
     college = College.objects.filter(Q(id=student.college_id)).get()
     options = webdriver.ChromeOptions()
