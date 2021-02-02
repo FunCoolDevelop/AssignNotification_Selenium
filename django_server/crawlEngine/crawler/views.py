@@ -67,9 +67,10 @@ def crawl(student):
         lessons = driver.find_elements_by_class_name('sub_open')
         lns = lessons[i]
 
+        print("Course " + (str)(i + 1) + "    " + lns.text)
+        tmpList.append(lns.text)
+        
         try :
-            print("Course " + (str)(i + 1) + "    " + lns.text)
-            tmpList.append(lns.text)
             lns.click()
             homw_tab = driver.find_element_by_id('menu_report')
             homw_tab.click()
@@ -91,12 +92,12 @@ def crawl(student):
                     tmp.append(ns)
                     tmp.append(nd)
                     tmpList.append(tmp)
-            assignList.append(tmpList)
+        except : # 과제가 없는 과목도 assignList에 제목은 추가됨
+            i = i
 
-            driver.back()
-            driver.back()
-        except :
-            break
+        assignList.append(tmpList)
+        driver.back()
+        driver.back()
 
     #print('Crawling Finished')
 
@@ -198,6 +199,7 @@ def crawlTemp(student): # 학기중이 아니므로 다른 경로로 크롤링
 
 def postProcess(student,assignRes):
     # assignRes의 각 행 0번째 값은 과목의 이름
+    # assignRes의 각 행 1번째부터 값이 존재하지 않으면 과제가 없는 과목
     courseQuery(student,assignRes)
     assignQuery(student,assignRes)
 
